@@ -1,0 +1,174 @@
+Task 1: Run a simple Dataflow job
+ 
+Go to the cloud storage bucket and create a bucket with the name as mentioned in the lab instruction page.
+Go to the BigQuery and create the Dataset and give dataset name as given in the lab instruction page
+Click on Dataset you created from left side menu
+Then click on + Create table from right side menu
+Right side please click on create table option:
+ 
+Create table from: Google cloud storage
+Create file from GCS bucket: cloud-training/gsp323/lab.csv
+Table Name: as given in the lab instructions
+File format: CSV
+Under Schema: Enable Edit as text  and paste below code and click on create table
+ 
+[
+  {"type":"STRING","name":"guid"},
+  {"type":"BOOLEAN","name":"isActive"},
+  {"type":"STRING","name":"firstname"},
+  {"type":"STRING","name":"surname"},
+  {"type":"STRING","name":"company"},
+  {"type":"STRING","name":"email"},
+  {"type":"STRING","name":"phone"},
+  {"type":"STRING","name":"address"},
+  {"type":"STRING","name":"about"},
+  {"type":"TIMESTAMP","name":"registered"},
+  {"type":"FLOAT","name":"latitude"},
+  {"type":"FLOAT","name":"longitude"}
+]
+ 
+ 
+Click on create table.
+ 
+Goto the dataflow from navigation menu & click on create job template
+Job name: job123 or any of your choice
+Region: us-central1
+Dataflow batch template: Text Files on Cloud Storage to BigQuery under "Process Data in Bulk (batch)
+Add the other details for for the template from the lab instruction page
+Click on Run Job.
+ 
+ 
+Task 2: Run a simple Dataproc job
+ 
+ 
+Go to the DataProc from navigation menu and click on create cluster (Select the region as mentioned in the lab instruction page for creating the cluster. )
+Keep the other settings as it is.
+click on create (It will take some time to create cluster)
+Click on cluster name Go to the VM INSTANCES
+Click on SSH and run the below command in SSH
+ 
+hdfs dfs -cp gs://cloud-training/gsp323/data.txt /data.txt
+ 
+Close the SSH.
+Still on the DataProc > click on the SUBMIT JOB
+ 
+Add the details for for the cluster from the lab instruction page
+
+ 
+Click on SUBMIT
+ 
+ 
+Task 3: Run a simple Dataprep job
+ 
+ 
+Choose Go to the DataPrep From navigation menu
+Click on Agree terms and conditions , Check mark for Agree and continue and click on allow
+username and click on Allow > Accept > Continue
+From left side choose cloud storage and click on pencil icon and paste below path and click on Go
+ 
+cloud-training/gsp323/runs.csv
+ 
+As you can see on the right side data is selected please click on continue.
+Click on the column 10 & right click on failure on right menu and select Delete rows with selected values
+Click on column 9 then click on three dots menu on right side > filter rows > on column values > contains
+ 
+Pattern to match:  /(^0$|^0\.0$)/
+Action: Delete matching values
+ 
+Click on Add.
+Now we have to rename the column name for this Goto the column right click on it and select rename give column name as following for all the columns and click on add.
+ 
+Column2: runid
+Column3: userid
+
+Column4: labid
+Column5: lab_title
+Column6: start
+Column7: end
+Column8: time
+Column9: score
+Column10: state
+ 
+After changing name for all columns please click on run > run (It will take some time)
+ 
+ 
+export ACCESS_TOKEN=$(gcloud auth print-access-token)
+
+Task 4. AI
+ 
+ 
+Meanwhile go back to google console and open the cloud shell and run below commands
+ 
+gcloud iam service-accounts create my-natlang-sa \
+--display-name "my natural language service account"
+ 
+ 
+gcloud iam service-accounts keys create ~/key.json \
+
+--iam-account my-natlang-sa@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
+
+ 
+ 
+export GOOGLE_APPLICATION_CREDENTIALS="/home/$USER/key.json"
+
+ 
+ 
+gcloud auth activate-service-account my-natlang-sa@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+
+ 
+ 
+gcloud ml language analyze-entities --content="Old Norse texts portray Odin as one-eyed and long-bearded, frequently wielding a spear named Gungnir and wearing a cloak and a broad hat." > result.json
+
+ 
+ 
+           gcloud auth login --no-launch-browser
+ 
+After running above command it will output a url in cloud please click on the link it will open in new page select username > click on allow &  copy the verification code from there and return back to cloud shell and paste there
+ 
+Run below command by replacing the the path with the PATH 
+
+On the lab instruction page Task 4 point no. 1 you can see the highlighted path in yellow color please replace that with the path in below command.             
+ 
+gsutil cp result.json PATH
+
+ 
+Go to the API & Services > credentials from navigation menu and click on +create credentials > API Key (note down your API key on notepad)
+ 
+Run below command by replacing API Key which is noted down
+ 
+export API_KEY={Replace with API KEY}
+ 
+Create request.json file using command : nano request.json
+Paste below code in request.json file and click on ctrl + x,  then press y, and hit enter to save the file
+ 
+{
+"config": {
+    "encoding":"FLAC",
+      "languageCode": "en-US"
+},
+"audio": {
+
+    "uri":"gs://cloud-training/gsp323/task4.flac"
+}
+}
+ 
+ 
+Run below command for in cloud shell after making request,json file
+ 
+ 
+curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json \
+"https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" > result.json
+ 
+Run below command by replacing the the path with the PATH You can find it on 1st
+ 
+On the lab instruction page Task 4 point no. 1 you can see the highlighted path in yellow color please replace that with the path in below command.             
+
+ 
+gsutil cp result.json PATH
+ 
+gcloud iam service-accounts create quickstart
+ 
+gcloud iam service-accounts keys create key.json --iam-account quickstart@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
+
+ 
+gcloud auth activate-service-account --key-file key.json
